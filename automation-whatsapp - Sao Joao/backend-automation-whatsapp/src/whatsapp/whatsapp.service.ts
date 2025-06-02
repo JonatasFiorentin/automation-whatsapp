@@ -150,19 +150,36 @@ export class WhatsappService implements OnModuleInit {
   }
 
   async sendAllMessages(
-    type: 'media' | 'message',
-    numbers: string[],
-    startDelay: number,
-    endDelay: number,
-    message?: string,
-    mediaFile?: Express.Multer.File,
-    name?: string | boolean,
+  type: 'media' | 'message',
+  numbers: string[],
+  startDelay: number,
+  endDelay: number,
+  message?: string,
+  mediaFile?: Express.Multer.File,
+  name?: string | boolean,
+  endTime?: string,
   ) {
     const success: string[] = [];
     const notRegistered: string[] = [];
     const failed: { number: string; error: string }[] = [];
+    const notSentByTimeLimit: string[] = [];
+
+    const parseEndTime = (time: string) => {
+      const [hours, minutes] = time.split(':').map(Number);
+      const now = new Date();
+      now.setHours(hours, minutes, 0, 0);
+      return now;
+    };
+
+    const limitTime = endTime ? parseEndTime(endTime) : null;
 
     for (const number of numbers) {
+      if (limitTime && new Date() >= limitTime) {
+        this.logger.warn(`⏰ Horário limite (${endTime}) atingido antes de enviar para: ${number}. Parando os envios.`);
+        notSentByTimeLimit.push(number);
+        break;
+      }
+
       const jid = `${number}@c.us`;
 
       try {
@@ -188,13 +205,8 @@ export class WhatsappService implements OnModuleInit {
         failed.push({ number, error: error.message });
       }
 
-      const delay =
-        Math.floor(
-          Math.random() * (Number(endDelay) - Number(startDelay) + 1),
-        ) + Number(startDelay);
-
-      console.log(delay);
-
+      const delay = Math.floor(Math.random() * (Number(endDelay) - Number(startDelay) + 1)) + Number(startDelay);
+      this.logger.log(`⏳ Aguardando ${delay}s antes do próximo envio...`);
       await new Promise((resolve) => setTimeout(resolve, delay * 1000));
     }
 
@@ -208,6 +220,7 @@ export class WhatsappService implements OnModuleInit {
       ...success.map((n) => ['Sucesso', n, '']),
       ...notRegistered.map((n) => ['Não registrado', n, '']),
       ...failed.map((f) => ['Falha', f.number, f.error]),
+      ...notSentByTimeLimit.map((n) => ['Não enviado (tempo limite)', n, 'Não enviado por causa do horário limite']),
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(logData);

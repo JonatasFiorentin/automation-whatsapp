@@ -8,7 +8,8 @@ export async function sendMessage(
   image: File | null,
   name: boolean,
   startDelay: number,
-  endDelay: number
+  endDelay: number,
+  endTime?: string
 ) {
   try {
     const form = new FormData()
@@ -19,6 +20,9 @@ export async function sendMessage(
       form.append('name', name)
       form.append('startDelay', startDelay)
       form.append('endDelay', endDelay)
+      if (endTime) {
+        form.append('endTime', endTime)
+      }
       return await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-messages-text`,
         form
@@ -29,6 +33,9 @@ export async function sendMessage(
       form.append('image', image as Blob)
       form.append('startDelay', startDelay)
       form.append('endDelay', endDelay)
+      if (endTime) {
+        form.append('endTime', endTime)
+      }
       return await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-messages-image-only`,
         form
@@ -41,6 +48,9 @@ export async function sendMessage(
       form.append('name', name)
       form.append('startDelay', startDelay)
       form.append('endDelay', endDelay)
+      if (endTime) {
+        form.append('endTime', endTime)
+      }
       return await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/whatsapp/send-messages-media-text`,
         form

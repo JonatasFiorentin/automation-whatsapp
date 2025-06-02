@@ -87,6 +87,7 @@ export class WhatsappController {
       name: string | boolean;
       startDelay: number;
       endDelay: number;
+      endTime?: string;
     },
   ) {
     if (!file) {
@@ -121,7 +122,20 @@ export class WhatsappController {
       );
     }
 
-    await this.whatsappService.sendAllMessages(
+    if (body.endTime) {
+      return await this.whatsappService.sendAllMessages(
+      'message',
+      formattedNumbers,
+      body.startDelay,
+      body.endDelay,
+      body.message,
+      file,
+      body.name,
+      body.endTime,
+      );
+    }
+
+    return await this.whatsappService.sendAllMessages(
       'message',
       formattedNumbers,
       body.startDelay,
@@ -147,6 +161,7 @@ export class WhatsappController {
       name: string | boolean;
       startDelay: number;
       endDelay: number;
+      endTime?: string;
     },
   ) {
     if (!files?.file || !files?.image) {
@@ -183,8 +198,21 @@ export class WhatsappController {
       body.name = body.name === 'true';
     }
 
-    await this.whatsappService.sendAllMessages(
+    if (body.endTime) {
+      return await this.whatsappService.sendAllMessages(
       'media',
+      formattedNumbers,
+      body.startDelay,
+      body.endDelay,
+      body.message,
+      image,
+      body.name,
+      body.endTime,
+      );
+    }
+
+    return await this.whatsappService.sendAllMessages(
+     'media',
       formattedNumbers,
       body.startDelay,
       body.endDelay,
@@ -210,6 +238,7 @@ export class WhatsappController {
     body: {
       startDelay: number;
       endDelay: number;
+      endTime?: string;
     },
   ) {
     if (!files?.file || !files?.image) {
@@ -242,13 +271,28 @@ export class WhatsappController {
       );
     }
 
-    await this.whatsappService.sendAllMessages(
+    if (body.endTime) {
+      return await this.whatsappService.sendAllMessages(
       'media',
       formattedNumbers,
       body.startDelay,
       body.endDelay,
       '',
       image,
+      undefined,
+      body.endTime,
+      );
+    }
+
+    return await this.whatsappService.sendAllMessages(
+      'media',
+      formattedNumbers,
+      body.startDelay,
+      body.endDelay,
+      '',
+      image,
+      undefined,
+      body.endTime,
     );
   }
 

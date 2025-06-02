@@ -30,6 +30,7 @@ export function MessageComposer({ contacts }: MessageComposerProps) {
 
   const [startDelay, setStartDelay] = useState<number>(40)
   const [endDelay, setEndDelay] = useState<number>(90)
+  const [endTime, setEndTime] = useState<string | undefined>("20:00")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -89,7 +90,8 @@ export function MessageComposer({ contacts }: MessageComposerProps) {
         image,
         true,
         startDelay,
-        endDelay
+        endDelay,
+        endTime
       )
 
       setSuccess('Mensagens enviadas com sucesso!')
@@ -263,6 +265,17 @@ export function MessageComposer({ contacts }: MessageComposerProps) {
             type="number"
             value={endDelay}
             onChange={(e) => setEndDelay(Number(e.target.value))}
+            className="w-24"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="end-delay">Horário limite para envio</Label>
+           <p className="font-light text-sm">(horas)</p>
+          <Input
+            id="end-time"
+            type="text"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
             className="w-24"
           />
         </div>
